@@ -9,8 +9,10 @@ const path = require('path');
 const { BotFrameworkAdapter, ConversationState, MemoryStorage, UserState } = require('botbuilder');
 
 // Import our custom bot class that provides a turn handling function.
-const { DialogBot } = require('./bots/dialogBot');
-const { UserProfileDialog } = require('./dialogs/userProfileDialog');
+const { DialogAndWelcomeBot } = require('./bots/dialogAndWelcomeBot');
+const { MainDialog } = require('./dialogs/mainDialog');
+
+
 
 // Read environment variables from .env file
 const ENV_FILE = path.join(__dirname, '.env');
@@ -55,8 +57,10 @@ const conversationState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
 
 // Create the main dialog.
-const dialog = new UserProfileDialog(userState);
-const bot = new DialogBot(conversationState, userState, dialog);
+
+const dialog = new MainDialog(userState);
+const bot = new DialogAndWelcomeBot(conversationState, userState, dialog);
+
 
 // Create HTTP server.
 const server = restify.createServer();
@@ -70,6 +74,6 @@ server.listen(process.env.port || process.env.PORT || 3978, function() {
 server.post('/api/messages', (req, res) => {
     adapter.processActivity(req, res, async (context) => {
         // Route the message to the bot's main handler.
-        await bot.run(context);
+            await bot.run(context); 
     });
 });
